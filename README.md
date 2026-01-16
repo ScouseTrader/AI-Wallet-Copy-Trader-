@@ -9,9 +9,14 @@
     ```
 
 2. **Configure Keys**:
-    Edit `.env` (create it) or `config.py` with your API keys:
-    * `BIRDEYE_API_KEY` (Free tier available)
-    * `BITQUERY_API_KEY` (Free tier available)
+    Copy `config.example.py` to `config.py`:
+
+    ```bash
+    cp config.example.py config.py
+    ```
+
+    Edit `config.py` (or use `.env`) with your API keys:
+    * `BITQUERY_API_KEY` (Required for Analysis)
 
 3. **Run**:
 
