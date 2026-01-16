@@ -4,6 +4,8 @@ from scout import Scout
 from brain import Brain
 from copier import Copier
 import config
+import json
+import os
 
 # Page Config
 st.set_page_config(page_title="AI Wallet Copy Trader", page_icon="🤖", layout="wide")
@@ -128,7 +130,7 @@ with tab2:
 
 # --- TAB 3: COPIER ---
 with tab3:
-    st.header("Execution Control")
+    st.header("Execution Control & Signals")
 
     col1, col2 = st.columns(2)
 
@@ -147,5 +149,31 @@ with tab3:
                 st.rerun()
 
     with col2:
-        st.subheader("Live Logs")
-        st.code("System initialized.\nWaiting for signals...", language="bash")
+        st.subheader("Live Signals Log")
+
+        # Load signals.json
+        try:
+            if os.path.exists("signals.json"):
+                with open("signals.json", "r") as f:
+                    signals_data = json.load(f)
+
+                if signals_data:
+                    st.dataframe(
+                        signals_data,
+                        column_config={
+                            "timestamp": "Time",
+                            "wallet": "Wallet",
+                            "token": "Token",
+                            "amount": "Amount",
+                            "type": "Action",
+                        },
+                    )
+                else:
+                    st.info("No signals detected yet.")
+            else:
+                st.info("Waiting for signals...")
+        except Exception as e:
+            st.error(f"Error reading signals: {e}")
+
+        if st.session_state.copier.is_running:
+            st.caption("Monitoring active... (Updates every 15 mins)")
