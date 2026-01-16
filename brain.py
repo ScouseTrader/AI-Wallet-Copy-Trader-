@@ -62,6 +62,49 @@ class Brain:
             print(f"Exception in find_early_buyers: {e}")
             return []
 
+    def get_recent_trades(self, wallet_address, limit=5):
+        """
+        Fetches the most recent trades for a specific wallet.
+        """
+        query = """
+        query ($wallet: String!, $limit: Int!) {
+          ethereum(network: ethereum) {
+            dexTrades(
+              options: {limit: $limit, desc: "block.timestamp.time"}
+              taker: {is: $wallet}
+            ) {
+              transaction {
+                hash
+              }
+              buyCurrency {
+                symbol
+                address
+              }
+              buyAmount
+              block {
+                timestamp {
+                  time
+                }
+              }
+            }
+          }
+        }
+        """
+        variables = {"wallet": wallet_address, "limit": limit}
+
+        try:
+            response = requests.post(
+                self.url,
+                json={"query": query, "variables": variables},
+                headers=self.headers,
+            )
+            data = response.json()
+            trades = data.get("data", {}).get("ethereum", {}).get("dexTrades", [])
+            return trades
+        except Exception as e:
+            print(f"Exception in get_recent_trades: {e}")
+            return []
+
     def score_wallets(self, wallets):
         """
         Analyzes a list of wallets and returns the ones with high 'Win Rate' and 'ROI'.

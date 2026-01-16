@@ -4,3 +4,4 @@ pandas
 web3
 solders
 solana
+streamlit
